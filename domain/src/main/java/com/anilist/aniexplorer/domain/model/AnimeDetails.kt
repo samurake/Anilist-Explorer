@@ -1,4 +1,4 @@
-package com.anilist.aniexplorer.model.domain
+package com.anilist.aniexplorer.domain.model
 
 data class AnimeDetails(
     val id: Int,

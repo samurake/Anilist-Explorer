@@ -24,6 +24,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Anilist Explorer"
 include(":app")
-include(":model")
+include(":domain")
 include(":data")
 include(":graphql")
