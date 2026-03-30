@@ -1,18 +1,30 @@
 package com.anilist.aniexplorer.data.di
 
 import com.anilist.aniexplorer.data.repository.AnimeRepositoryImpl
+import com.anilist.aniexplorer.data.repository.MockAnimeRepositoryImpl
 import com.anilist.aniexplorer.domain.repository.AnimeRepository
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+object RepositoryModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindAnimeRepository(impl: AnimeRepositoryImpl): AnimeRepository
+    fun provideAnimeRepository(
+        @Named("isMock") isMock: Boolean,
+        realRepository: AnimeRepositoryImpl,
+        mockRepository: MockAnimeRepositoryImpl
+    ): AnimeRepository {
+        return if (isMock) {
+            mockRepository
+        } else {
+            realRepository
+        }
+    }
 }

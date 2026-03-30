@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.anilist.aniexplorer.domain.Resource
 import com.anilist.aniexplorer.domain.usecase.GetHomeSectionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,8 +22,27 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    private val _event = MutableSharedFlow<HomeEvent>()
+    val event: SharedFlow<HomeEvent> = _event.asSharedFlow()
+
     init {
-        loadHomeData()
+        handleIntent(HomeIntent.LoadHomeData)
+    }
+
+    fun handleIntent(intent: HomeIntent) {
+        when (intent) {
+            is HomeIntent.LoadHomeData -> loadHomeData()
+            is HomeIntent.OnAnimeClick -> {
+                viewModelScope.launch {
+                    _event.emit(HomeEvent.NavigateToDetails(intent.id))
+                }
+            }
+            is HomeIntent.OnDisabledFeatureClick -> {
+                viewModelScope.launch {
+                    _event.emit(HomeEvent.ShowSnackbar("Feature not implemented yet"))
+                }
+            }
+        }
     }
 
     private fun loadHomeData() {
@@ -43,9 +65,5 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun onRetry() {
-        loadHomeData()
     }
 }
