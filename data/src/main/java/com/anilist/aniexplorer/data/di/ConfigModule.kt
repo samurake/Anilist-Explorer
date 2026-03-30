@@ -1,5 +1,6 @@
 package com.anilist.aniexplorer.data.di
 
+import com.anilist.aniexplorer.data.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,7 +15,7 @@ object ConfigModule {
     @Provides
     @Singleton
     @Named("isMock")
-    fun provideIsMock(): Boolean = true // Default to true while API is down
+    fun provideIsMock(): Boolean = BuildConfig.IS_MOCK
 
     @Provides
     @Singleton
