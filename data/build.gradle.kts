@@ -24,7 +24,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":model"))
+    implementation(project(":domain"))
     implementation(project(":graphql"))
 
     implementation(libs.hilt.android)
