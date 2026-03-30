@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.collectLatest
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    onNavigateToDetails: (Int) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -36,7 +37,7 @@ fun HomeScreen(
                     snackbarHostState.showSnackbar(event.message)
                 }
                 is HomeEvent.NavigateToDetails -> {
-                    // Out of scope for this task
+                    onNavigateToDetails(event.id)
                 }
             }
         }
