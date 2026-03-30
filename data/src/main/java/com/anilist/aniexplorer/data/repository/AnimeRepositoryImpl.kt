@@ -31,7 +31,10 @@ class AnimeRepositoryImpl @Inject constructor(
                 }
 
                 val data = response.data
-                    ?: return@withContext Resource.Error("No data returned from server")
+                if (data == null) {
+                    val error = response.exception?.message ?: "No data returned from server"
+                    return@withContext Resource.Error(error)
+                }
 
                 val trendingAnimes = data.trending?.media?.mapNotNull { it?.toDomainModel() } ?: emptyList()
                 val popularAnimes = data.popular?.media?.mapNotNull { it?.toDomainModel() } ?: emptyList()
@@ -77,7 +80,10 @@ class AnimeRepositoryImpl @Inject constructor(
                 }
 
                 val media = response.data?.Media
-                    ?: return@withContext Resource.Error("Anime not found")
+                if (media == null) {
+                    val error = response.exception?.message ?: "Anime not found or network error"
+                    return@withContext Resource.Error(error)
+                }
 
                 Resource.Success(media.toDomainModel())
             } catch (e: ApolloException) {
