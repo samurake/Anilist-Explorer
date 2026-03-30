@@ -38,7 +38,7 @@ class AnimeRepositoryImpl @Inject constructor(
 
                 val sections = listOf(
                     HomeSection(
-                        title = "Trending Now",
+                        title = "Now Showing",
                         type = HomeSection.SectionType.NOW_SHOWING,
                         animes = trendingAnimes
                     ),
