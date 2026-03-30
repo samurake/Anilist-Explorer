@@ -17,6 +17,29 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("development") {
+            dimension = "environment"
+            buildConfigField("boolean", "IS_MOCK", "true")
+        }
+        create("production") {
+            dimension = "environment"
+            buildConfigField("boolean", "IS_MOCK", "false")
+        }
+    }
+
+    buildTypes {
+        release {
+            // Keep library minification off for now, let the app handle it
+            isMinifyEnabled = false
+        }
+    }
 }
 
 kotlin {
