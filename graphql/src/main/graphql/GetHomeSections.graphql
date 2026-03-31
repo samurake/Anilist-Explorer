@@ -1,0 +1,32 @@
+query GetHomeSections {
+  trending: Page(page: 1, perPage: 10) {
+    media(sort: TRENDING_DESC, type: ANIME, isAdult: false) {
+      id
+      title {
+        romaji
+        english
+      }
+      coverImage {
+        large
+      }
+      averageScore
+      genres
+      duration
+    }
+  }
+  popular: Page(page: 1, perPage: 10) {
+    media(sort: POPULARITY_DESC, type: ANIME, isAdult: false) {
+      id
+      title {
+        romaji
+        english
+      }
+      coverImage {
+        large
+      }
+      averageScore
+      genres
+      duration
+    }
+  }
+}

@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Anilist Explorer</string>
+    <string name="home_title">Anilist</string>
+    <string name="menu_description">Menu</string>
+    <string name="notifications_description">Notifications</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_saved">Saved</string>
+    <string name="nav_profile">Profile</string>
+    <string name="error_message">Error: %1$s</string>
+    <string name="retry">Retry</string>
+    <string name="no_anime_found">No anime found</string>
+    <string name="feature_not_implemented">Feature not implemented yet</string>
+    <string name="action_not_implemented">%1$s not implemented yet</string>
+    <string name="not_available">N/A</string>
+    <string name="unknown_value">Unknown</string>
+    <string name="section_now_showing">Now Showing</string>
+    <string name="section_popular">Popular</string>
+    <string name="see_more">See more</string>
+    <string name="score_format">%1$s/10 IMDb</string>
+    <string name="image_not_available">Image not available</string>
+    <string name="play_trailer">Play Trailer</string>
+    <string name="play_trailer_description">Play Trailer Backdrop</string>
+    <string name="back_description">Back</string>
+    <string name="more_description">Menu</string>
+    <string name="favorite_description">Favorite</string>
+    <string name="label_length">Length</string>
+    <string name="label_language">Language</string>
+    <string name="label_rating">Rating</string>
+    <string name="label_description">Description</string>
+    <string name="label_cast">Cast</string>
+    <string name="see_more_cast">See more cast</string>
+</resources>

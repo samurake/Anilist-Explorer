@@ -1,0 +1,5 @@
+<resources>
+    <fraction name="alpha_banner_overlay_strong">30%</fraction>
+    <fraction name="alpha_banner_overlay_soft">10%</fraction>
+    <fraction name="alpha_placeholder_icon">40%</fraction>
+</resources>
