@@ -1,24 +1,57 @@
 package com.anilist.aniexplorer.ui.home
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.anilist.aniexplorer.R
 import com.anilist.aniexplorer.domain.model.HomeSection
-import com.anilist.aniexplorer.ui.theme.HeaderBlue
+import com.anilist.aniexplorer.ui.common.SectionHeader
+import com.anilist.aniexplorer.ui.textUnitResource
+import com.anilist.aniexplorer.ui.theme.AnilistColors
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,6 +69,7 @@ fun HomeScreen(
                 is HomeEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
+
                 is HomeEvent.NavigateToDetails -> {
                     onNavigateToDetails(event.id)
                 }
@@ -43,87 +77,170 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Anilist",
-                        color = HeaderBlue,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = HeaderBlue)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) }) {
-                        Icon(Icons.Default.Info, contentDescription = "Notifications", tint = HeaderBlue)
-                    }
-                }
-            )
-        },
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                tonalElevation = 8.dp
-            ) {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Already selected */ },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    enabled = false,
-                    onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) },
-                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Saved") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    enabled = false,
-                    onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) },
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
-                )
-            }
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { padding ->
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(AnilistColors.appWhite())) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            when (val state = uiState) {
-                is HomeUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-                is HomeUiState.Success -> {
-                    HomeContent(
-                        uiModel = state.uiModel,
-                        onAnimeClick = { id -> viewModel.handleIntent(HomeIntent.OnAnimeClick(id)) },
-                        onSeeMoreClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) }
+                .fillMaxHeight()
+                .width(dimensionResource(R.dimen.home_side_panel_width))
+                .background(AnilistColors.homeSideRectangle())
+        )
+
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.home_title),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = textUnitResource(R.dimen.home_title_letter_spacing)
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) },
+                            modifier = Modifier.padding(start = dimensionResource(R.dimen.home_top_bar_icon_padding))
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.figma_menu_icon),
+                                contentDescription = stringResource(R.string.menu_description),
+                                tint = AnilistColors.appBlack()
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) },
+                            modifier = Modifier.padding(end = dimensionResource(R.dimen.home_top_bar_icon_padding))
+                        ) {
+                            NotificationIcon(
+                                hasNotification = true,
+                                contentDescription = stringResource(R.string.notifications_description)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = AnilistColors.appTransparent()
+                    )
+                )
+            },
+            bottomBar = {
+                NavigationBar(
+                    containerColor = AnilistColors.appWhite(),
+                    tonalElevation = dimensionResource(R.dimen.elevation_none),
+                    modifier = Modifier.shadow(
+                        elevation = dimensionResource(R.dimen.home_nav_shadow_elevation),
+                        ambientColor = AnilistColors.navBarShadow(),
+                        spotColor = AnilistColors.navBarShadow()
+                    )
+                ) {
+                    val clearInteraction = remember { MutableInteractionSource() }
+                    val itemColors = NavigationBarItemDefaults.colors(
+                        indicatorColor = AnilistColors.appTransparent()
+                    )
+
+                    NavigationBarItem(
+                        selected = true,
+                        onClick = { },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.figma_home_icon),
+                                contentDescription = stringResource(R.string.nav_home),
+                                tint = AnilistColors.Unspecified
+                            )
+                        },
+                        interactionSource = clearInteraction,
+                        colors = itemColors
+                    )
+                    NavigationBarItem(
+                        selected = false,
+                        enabled = false,
+                        onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.figma_ticket_icon),
+                                contentDescription = stringResource(R.string.nav_saved)
+                            )
+                        },
+                        interactionSource = clearInteraction,
+                        colors = itemColors
+                    )
+                    NavigationBarItem(
+                        selected = false,
+                        enabled = false,
+                        onClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.figma_bookmark_icon),
+                                contentDescription = stringResource(R.string.nav_profile)
+                            )
+                        },
+                        interactionSource = clearInteraction,
+                        colors = itemColors
                     )
                 }
-                is HomeUiState.Error -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = "Error: ${state.message}", color = Color.Red)
-                        Button(onClick = { viewModel.handleIntent(HomeIntent.LoadHomeData) }) {
-                            Text("Retry")
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            containerColor = AnilistColors.appTransparent()
+        ) { padding ->
+            Crossfade(
+                targetState = uiState,
+                label = "HomeScreenStateCrossfade",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(AnilistColors.appTransparent())
+            ) { state ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .background(AnilistColors.appTransparent())
+                ) {
+                    when (state) {
+                        is HomeUiState.Loading -> {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+
+                        is HomeUiState.Success -> {
+                            HomeContent(
+                                uiModel = state.uiModel,
+                                onAnimeClick = { id ->
+                                    viewModel.handleIntent(
+                                        HomeIntent.OnAnimeClick(
+                                            id
+                                        )
+                                    )
+                                },
+                                onSeeMoreClick = { viewModel.handleIntent(HomeIntent.OnDisabledFeatureClick) }
+                            )
+                        }
+
+                        is HomeUiState.Error -> {
+                            Column(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .background(AnilistColors.appTransparent()),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.error_message, state.message),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                                Button(onClick = { viewModel.handleIntent(HomeIntent.RetryLoad) }) {
+                                    Text(stringResource(R.string.retry))
+                                }
+                            }
+                        }
+
+                        is HomeUiState.Empty -> {
+                            Text(
+                                text = stringResource(R.string.no_anime_found),
+                                modifier = Modifier.align(Alignment.Center)
+                            )
                         }
                     }
-                }
-                is HomeUiState.Empty -> {
-                    Text(
-                        text = "No anime found",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
                 }
             }
         }
@@ -139,45 +256,69 @@ fun HomeContent(
     val trending = uiModel.sections.find { it.type == HomeSection.SectionType.NOW_SHOWING }
     val popular = uiModel.sections.find { it.type == HomeSection.SectionType.POPULAR }
 
+    val horizontalPadding = dimensionResource(R.dimen.home_section_horizontal_padding)
+
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AnilistColors.appTransparent())
     ) {
-        // Now Showing Section
         trending?.let { section ->
             item {
-                HomeHeader(
-                    title = "Now Showing",
-                    onSeeMoreClick = onSeeMoreClick
+                SectionHeader(
+                    title = stringResource(R.string.section_now_showing),
+                    onSeeMoreClick = onSeeMoreClick,
+                    modifier = Modifier.padding(
+                        top = dimensionResource(R.dimen.home_section_top_padding),
+                        start = horizontalPadding,
+                        end = horizontalPadding
+                    )
                 )
+
                 LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    contentPadding = PaddingValues(
+                        horizontal = horizontalPadding,
+                        vertical = dimensionResource(R.dimen.spacing_xlarge)
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_large)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(AnilistColors.appTransparent())
                 ) {
-                    items(section.animes) { anime ->
+                    items(section.animes, key = { it.id }) { anime ->
                         AnimeHorizontalCard(
                             anime = anime,
                             onClick = { onAnimeClick(anime.id) }
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(
+                    modifier = Modifier
+                        .height(dimensionResource(R.dimen.spacing_medium))
+                        .background(AnilistColors.appTransparent())
+                )
             }
         }
 
-        // Popular Section Header
         popular?.let { section ->
             item {
-                HomeHeader(
-                    title = "Popular",
-                    onSeeMoreClick = onSeeMoreClick
+                SectionHeader(
+                    title = stringResource(R.string.section_popular),
+                    onSeeMoreClick = onSeeMoreClick,
+                    modifier = Modifier.padding(
+                        bottom = dimensionResource(R.dimen.home_section_top_padding),
+                        start = horizontalPadding,
+                        end = horizontalPadding
+                    )
                 )
             }
-            items(section.animes) { anime ->
+            itemsIndexed(section.animes, key = { _, anime -> anime.id }) { index, anime ->
                 AnimeVerticalItem(
                     anime = anime,
-                    onClick = { onAnimeClick(anime.id) }
+                    onClick = { onAnimeClick(anime.id) },
+                    modifier = Modifier.background(AnilistColors.appTransparent())
                 )
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_large)))
             }
         }
     }

@@ -9,7 +9,7 @@ data class DetailsUiModel(
     val bannerImageUrl: String?,
     val coverImageUrl: String?,
     val description: String,
-    val averageScore: String,
+    val averageScore: Double,
     val rating: String,
     val language: String,
     val duration: String,

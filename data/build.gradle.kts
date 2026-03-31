@@ -36,7 +36,6 @@ android {
 
     buildTypes {
         release {
-            // Keep library minification off for now, let the app handle it
             isMinifyEnabled = false
         }
     }
