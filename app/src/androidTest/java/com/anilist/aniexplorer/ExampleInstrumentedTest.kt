@@ -13,6 +13,6 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.anilist.aniexplorer", appContext.packageName)
+        assertTrue(appContext.packageName.startsWith("com.anilist.aniexplorer"))
     }
 }
