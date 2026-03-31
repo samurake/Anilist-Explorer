@@ -14,11 +14,15 @@ import com.anilist.aniexplorer.data.mapper.toDomainModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import dagger.Lazy
 
 class AnimeRepositoryImpl @Inject constructor(
-    private val apolloClient: ApolloClient,
+    private val apolloClientLazy: Lazy<ApolloClient>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AnimeRepository {
+
+    private val apolloClient: ApolloClient
+        get() = apolloClientLazy.get()
 
     override suspend fun getHomeSections(): Resource<List<HomeSection>> {
         return withContext(ioDispatcher) {

@@ -1,5 +1,7 @@
 package com.anilist.aniexplorer.ui.home
 
+import android.app.Application
+import com.anilist.aniexplorer.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anilist.aniexplorer.domain.Resource
@@ -16,7 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getHomeSectionsUseCase: GetHomeSectionsUseCase
+    private val application: Application,
+    private val getHomeSectionsUseCase: GetHomeSectionsUseCase,
+    @com.anilist.aniexplorer.graphql.di.DefaultDispatcher private val defaultDispatcher: kotlinx.coroutines.CoroutineDispatcher
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -26,12 +30,12 @@ class HomeViewModel @Inject constructor(
     val event: SharedFlow<HomeEvent> = _event.asSharedFlow()
 
     init {
-        handleIntent(HomeIntent.LoadHomeData)
+        loadHomeData()
     }
 
     fun handleIntent(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.LoadHomeData -> loadHomeData()
+            is HomeIntent.RetryLoad -> loadHomeData()
             is HomeIntent.OnAnimeClick -> {
                 viewModelScope.launch {
                     _event.emit(HomeEvent.NavigateToDetails(intent.id))
@@ -39,7 +43,7 @@ class HomeViewModel @Inject constructor(
             }
             is HomeIntent.OnDisabledFeatureClick -> {
                 viewModelScope.launch {
-                    _event.emit(HomeEvent.ShowSnackbar("Feature not implemented yet"))
+                    _event.emit(HomeEvent.ShowSnackbar(application.getString(R.string.feature_not_implemented)))
                 }
             }
         }
@@ -54,7 +58,10 @@ class HomeViewModel @Inject constructor(
                     if (sections.isEmpty()) {
                         _uiState.value = HomeUiState.Empty
                     } else {
-                        _uiState.value = HomeUiState.Success(HomeUiModel(sections))
+                        val uiModel = kotlinx.coroutines.withContext(defaultDispatcher) {
+                            HomeUiModel(sections)
+                        }
+                        _uiState.value = HomeUiState.Success(uiModel)
                     }
                 }
                 is Resource.Error -> {

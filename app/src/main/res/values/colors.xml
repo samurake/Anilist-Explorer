@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="app_black">#FF000000</color>
+    <color name="app_white">#FFFFFFFF</color>
+    <color name="app_red">#FFFF0000</color>
+    <color name="app_transparent">#00000000</color>
+
+    <color name="navy">#FF001F3F</color>
+    <color name="light_blue">#FFE6F0FF</color>
+    <color name="background_gray">#FFF9F9F9</color>
+    <color name="genre_chip_background">#FFDBE3FF</color>
+    <color name="genre_chip_text">#FF88A4FF</color>
+    <color name="star_yellow">#FFFFC319</color>
+    <color name="duration_gray">#FF9C9C9C</color>
+    <color name="header_blue">#FF110E47</color>
+    <color name="nav_bar_shadow">#142B2D67</color>
+    <color name="card_shadow">#FFD8D8D8</color>
+    <color name="home_side_rectangle">#FFF9F9FA</color>
+    <color name="see_more_border">#FFE5E4EA</color>
+    <color name="card_shadow_ambient">#FF9E9E9E</color>
+    <color name="card_shadow_spot">#FF757575</color>
+
+    <color name="dark_background">#FF0A0D14</color>
+    <color name="dark_surface">#FF151921</color>
+    <color name="dark_primary">#FF88A4FF</color>
+    <color name="dark_secondary">#FFACC7FF</color>
+    <color name="dark_tertiary">#FF5D5E7D</color>
+    <color name="dark_on_background">#FFE6F0FF</color>
+    <color name="dark_on_surface">#FFE6F0FF</color>
 </resources>
